@@ -1,0 +1,120 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "csci-5409-a3-state-machine",
+  "States": {
+    "csci-5409-a3-state-machine": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:730335465905:function:SHA-256-Hashing:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Choice for md5"
+    },
+    "Choice for md5": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.course_uri",
+          "IsPresent": true,
+          "Next": "MD5 Lambda"
+        }
+      ],
+      "Default": "Success"
+    },
+    "MD5 Lambda": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:730335465905:function:MD5-Hashing:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Choice for bycrypt"
+    },
+    "Choice for bycrypt": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.course_uri",
+          "IsPresent": true,
+          "Next": "Bycrypt Lambda"
+        }
+      ],
+      "Default": "Success (1)"
+    },
+    "Bycrypt Lambda": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:730335465905:function:Bycrypt-Hashing:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "validate"
+    },
+    "validate": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.result",
+          "StringMatches": "",
+          "Next": "Fail"
+        }
+      ],
+      "Default": "Success (2)"
+    },
+    "Fail": {
+      "Type": "Fail"
+    },
+    "Success (2)": {
+      "Type": "Succeed"
+    },
+    "Success (1)": {
+      "Type": "Succeed"
+    },
+    "Success": {
+      "Type": "Succeed"
+    }
+  }
+}
