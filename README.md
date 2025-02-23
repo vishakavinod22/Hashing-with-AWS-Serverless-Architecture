@@ -45,3 +45,11 @@ Output JSON:
 "action": "bcrypt",  
 "value": "<data to perform hash operation on>"  
 }
+
+## AWS Configuration Screenshots
+### Amazon API Gateway
+![Amazon API Gateway](csci5409_A3_results_images/B00955686_APIGateway.png)
+### AWS Lambda
+![AWS Lambd](csci5409_A3_results_images/B00955686_LambdaFunctions.png)
+### State Machine with Step Functions
+![State Machine with Step Functions](csci5409_A3_results_images/B00955686_Statemachine.png)
